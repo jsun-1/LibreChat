@@ -1,28 +1,7 @@
 import { atom } from 'recoil';
 import { SettingsViews } from 'librechat-data-provider';
+import { atomWithLocalStorage } from '~/store/utils';
 import type { TOptionSettings } from '~/common';
-
-// Improved helper function to create atoms with localStorage
-function atomWithLocalStorage<T>(key: string, defaultValue: T) {
-  return atom<T>({
-    key,
-    default: defaultValue, // Set the default value directly
-    effects_UNSTABLE: [
-      ({ setSelf, onSet }) => {
-        // Load the initial value from localStorage if it exists
-        const savedValue = localStorage.getItem(key);
-        if (savedValue !== null) {
-          setSelf(JSON.parse(savedValue));
-        }
-
-        // Update localStorage whenever the atom's value changes
-        onSet((newValue: T) => {
-          localStorage.setItem(key, JSON.stringify(newValue));
-        });
-      },
-    ],
-  });
-}
 
 // Static atoms without localStorage
 const staticAtoms = {
@@ -44,7 +23,7 @@ const localStorageAtoms = {
   autoScroll: atomWithLocalStorage('autoScroll', false),
   showCode: atomWithLocalStorage('showCode', false),
   hideSidePanel: atomWithLocalStorage('hideSidePanel', false),
-  modularChat: atomWithLocalStorage('modularChat', false),
+  modularChat: atomWithLocalStorage('modularChat', true),
   LaTeXParsing: atomWithLocalStorage('LaTeXParsing', true),
   UsernameDisplay: atomWithLocalStorage('UsernameDisplay', true),
   TextToSpeech: atomWithLocalStorage('textToSpeech', true),
@@ -64,6 +43,7 @@ const localStorageAtoms = {
   splitAtTarget: atomWithLocalStorage('splitAtTarget', false),
   rememberForkOption: atomWithLocalStorage('rememberForkOption', true),
   playbackRate: atomWithLocalStorage<number | null>('playbackRate', null),
+  saveDrafts: atomWithLocalStorage('saveDrafts', false),
 };
 
 export default { ...staticAtoms, ...localStorageAtoms };
